@@ -44,8 +44,8 @@
 
 * In actual situations, it effectively improves the access speed of our customers in mainland China.
   * Our customers can quickly connect to Cloudflare Asia Pop Edge Server (E.g. HongKong) through the built-in Coffee.cr.
-  * At the peak of congestion, if you are in Asia.
-  * You want to connect to Pop Edge Server in Asia instead of America, France, Amsterdam.
+  * At the peak of congestion, if you are in Asia,
+    * You want to connect to Pop Edge Server in Asia instead of America, France, Amsterdam.
 
 ### Features
 
