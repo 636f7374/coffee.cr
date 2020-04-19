@@ -6,8 +6,6 @@ dependencies:
     github: 64726f70/wrench.cr
   ipaddress:
     github: Sija/ipaddress.cr
-  durian:
-    github: 636f7374/durian.cr
   immutable:
     github: lucaong/immutable
 
