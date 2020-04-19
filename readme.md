@@ -58,7 +58,7 @@
 
 ### Sample
 
-* Coffee - Scan data format after export
+* Coffee - Export
 
 ```text
 {"ipAddress":"162.159.36.5","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:43.971333000Z","timing":"171.98ms"}
@@ -84,7 +84,7 @@
 {"ipAddress":"162.159.36.241","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:53.381347000Z","timing":"168.33ms"}
 ```
 
-* Coffee - Scanner configuration file
+* Coffee - Import
   * You can specify a different export location for each scan through the configuration file.
   * Or use ARGV to specify a single export location.
 
