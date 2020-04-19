@@ -171,7 +171,7 @@
   type: region
 ```
 
-## Use Shield
+## Use Coffee
 
 ### Used as Shard
 
