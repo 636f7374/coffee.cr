@@ -68,7 +68,7 @@ Or use ARGV to specify a single export location.
 
 ```yaml
 - ipRange: 198.41.214.0/23
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -76,7 +76,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 190.93.244.0/22
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -84,7 +84,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 172.64.160.0/20
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -92,7 +92,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 172.64.96.0/20
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -100,7 +100,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 162.159.132.0/24
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -108,7 +108,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 162.159.46.0/24
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -116,7 +116,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 162.159.36.0/24
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -124,7 +124,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 162.159.128.0/19
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -132,7 +132,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 141.101.120.0/22
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
@@ -140,7 +140,7 @@ Or use ARGV to specify a single export location.
     write: 2
   type: region
 - ipRange: 104.18.0.0/20
-  export: /Users/User/Downloads/coffee.cr/sample
+  export: /Users/User/sample
   needles: asia
   timeout:
     connect: 2
