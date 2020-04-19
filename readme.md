@@ -59,32 +59,6 @@
 
 ### Sample
 
-* Coffee - Export
-
-```text
-{"ipAddress":"162.159.36.5","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:43.971333000Z","timing":"171.98ms"}
-{"ipAddress":"162.159.36.17","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:54.726890000Z","timing":"165.72ms"}
-{"ipAddress":"162.159.36.22","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:58.489802000Z","timing":"171.66ms"}
-{"ipAddress":"162.159.36.31","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:07.036998000Z","timing":"173.44ms"}
-{"ipAddress":"162.159.36.50","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:24.045118000Z","timing":"165.44ms"}
-{"ipAddress":"162.159.36.51","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:24.207770000Z","timing":"162.49ms"}
-{"ipAddress":"162.159.36.60","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:30.179999000Z","timing":"167.71ms"}
-{"ipAddress":"162.159.36.84","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:48.974894000Z","timing":"474.01ms"}
-{"ipAddress":"162.159.36.94","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:57.753831000Z","timing":"552.71ms"}
-{"ipAddress":"162.159.36.105","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:12.610249000Z","timing":"510.71ms"}
-{"ipAddress":"162.159.36.116","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:24.517550000Z","timing":"189.18ms"}
-{"ipAddress":"162.159.36.123","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:30.561109000Z","timing":"487.24ms"}
-{"ipAddress":"162.159.36.126","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:32.852852000Z","timing":"467.81ms"}
-{"ipAddress":"162.159.36.130","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:34.701067000Z","timing":"163.06ms"}
-{"ipAddress":"162.159.36.136","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:39.692680000Z","timing":"369.2ms"}
-{"ipAddress":"162.159.36.169","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:05.020376000Z","timing":"178.66ms"}
-{"ipAddress":"162.159.36.184","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:14.476441000Z","timing":"170.79ms"}
-{"ipAddress":"162.159.36.208","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:30.982121000Z","timing":"481.95ms"}
-{"ipAddress":"162.159.36.230","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:45.955359000Z","timing":"179.87ms"}
-{"ipAddress":"162.159.36.234","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:49.161769000Z","timing":"176.81ms"}
-{"ipAddress":"162.159.36.241","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:53.381347000Z","timing":"168.33ms"}
-```
-
 * Coffee - Import
 
 ```text
@@ -173,6 +147,32 @@ Or use ARGV to specify a single export location.
     read: 2
     write: 2
   type: region
+```
+
+* Coffee - Export
+
+```text
+{"ipAddress":"162.159.36.5","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:43.971333000Z","timing":"171.98ms"}
+{"ipAddress":"162.159.36.17","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:54.726890000Z","timing":"165.72ms"}
+{"ipAddress":"162.159.36.22","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:58.489802000Z","timing":"171.66ms"}
+{"ipAddress":"162.159.36.31","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:07.036998000Z","timing":"173.44ms"}
+{"ipAddress":"162.159.36.50","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:24.045118000Z","timing":"165.44ms"}
+{"ipAddress":"162.159.36.51","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:24.207770000Z","timing":"162.49ms"}
+{"ipAddress":"162.159.36.60","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:30.179999000Z","timing":"167.71ms"}
+{"ipAddress":"162.159.36.84","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:48.974894000Z","timing":"474.01ms"}
+{"ipAddress":"162.159.36.94","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:16:57.753831000Z","timing":"552.71ms"}
+{"ipAddress":"162.159.36.105","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:12.610249000Z","timing":"510.71ms"}
+{"ipAddress":"162.159.36.116","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:24.517550000Z","timing":"189.18ms"}
+{"ipAddress":"162.159.36.123","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:30.561109000Z","timing":"487.24ms"}
+{"ipAddress":"162.159.36.126","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:32.852852000Z","timing":"467.81ms"}
+{"ipAddress":"162.159.36.130","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:34.701067000Z","timing":"163.06ms"}
+{"ipAddress":"162.159.36.136","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:17:39.692680000Z","timing":"369.2ms"}
+{"ipAddress":"162.159.36.169","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:05.020376000Z","timing":"178.66ms"}
+{"ipAddress":"162.159.36.184","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:14.476441000Z","timing":"170.79ms"}
+{"ipAddress":"162.159.36.208","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:30.982121000Z","timing":"481.95ms"}
+{"ipAddress":"162.159.36.230","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:45.955359000Z","timing":"179.87ms"}
+{"ipAddress":"162.159.36.234","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:49.161769000Z","timing":"176.81ms"}
+{"ipAddress":"162.159.36.241","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:53.381347000Z","timing":"168.33ms"}
 ```
 
 ## Use Coffee
