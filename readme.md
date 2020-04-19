@@ -86,8 +86,9 @@
 ```
 
 * Coffee - Import
-  * You can specify a different export location for each scan through the configuration file.
-  * Or use ARGV to specify a single export location.
+
+You can specify a different export location for each scan through the configuration file.
+Or use ARGV to specify a single export location.
 
 ```yaml
 - ipRange: 198.41.214.0/23
