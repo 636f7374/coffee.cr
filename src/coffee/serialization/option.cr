@@ -3,14 +3,14 @@ module Coffee::Serialization
     include YAML::Serializable
 
     property ipRange : String
-    property output : String?
+    property export : String?
     property needles : String | Array(String)
     property timeout : TimeOut?
     property type : String
 
     def initialize
       @ipRange = String.new
-      @output = String.new
+      @export = String.new
       @needles = String.new
       @timeout = TimeOut.new
       @type = String.new
@@ -72,12 +72,12 @@ module Coffee::Serialization
       list
     end
 
-    private def output_to_writer : Writer?
-      return unless _output = output
-      _output = File.open _output, "ab" rescue nil
-      return unless _output
+    private def export_to_writer : Writer?
+      return unless _export = export
+      _export = File.open _export, "ab" rescue nil
+      return unless _export
 
-      Writer.new _output
+      Writer.new _export
     end
 
     def to_task(writer : Writer? = nil) : Task?
@@ -86,7 +86,7 @@ module Coffee::Serialization
       _ip_range = IPAddress.new ipRange rescue nil
       return unless _ip_range
 
-      writer = output_to_writer unless writer
+      writer = export_to_writer unless writer
       _timeout = timeout || TimeOut.new
 
       task = Task.new _ip_range, needles, _timeout

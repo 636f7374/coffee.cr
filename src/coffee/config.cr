@@ -58,7 +58,7 @@ class Coffee::Config
         self.progressBar = false
       end
 
-      parser.on("--output +", "-o +", "Use the same IO writer (Prevent out-of-order writing)") do |value|
+      parser.on("--export +", "-o +", "Use the same IO writer (Prevent out-of-order writing)") do |value|
         file = File.open value, "ab" rescue nil
         self.writer = Writer.new file if file
       end
