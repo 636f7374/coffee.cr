@@ -33,8 +33,8 @@
 
 * Imagine that if you live in France, Cloudflare AnyCast causes you to connect to Cloudflare Pop Edge Server in the United States.
   * Which will greatly slow down your Internet speed, So what should you do?
-* Fortunately, Cloudflare provides a method for detecting Pop Edge Server IATA information that the server currently belongs to.
-  * When requesting the Cloudflare IP address, Cloudflare will return the `CF-RAY` HTTP header, which contains `IATA` information.
+* Fortunately, Cloudflare provides a method for detecting Pop Edge Server IATA that the server currently belongs to.
+  * When requesting the Cloudflare IP address, Cloudflare will return the `CF-RAY` HTTP header, which contains `IATA`.
 * In our actual tests, this will improve 2x-4x network performance.
 * Since Cloudflare ’s Pop Edge Server is floating, the geographic location will change with time, a few minutes or a few hours.
   * Therefore, it needs to be scanned every once in a while.
