@@ -6,7 +6,7 @@ class Coffee::Task
   property progress : Progress?
   property finished : Bool
 
-  def initialize(@ipRange : IPAddress, @iatas : Array(Needle::IATA), @commandLine : Bool = false, @timeout : TimeOut = TimeOut.new)
+  def initialize(@ipRange : IPAddress, @iatas : Array(Needle::IATA), commandLine : Bool = false, @timeout : TimeOut = TimeOut.new)
     @edges = edges
     @progress = Progress.new ipRange.size if commandLine
     @finished = false
@@ -88,7 +88,7 @@ class Coffee::Task
   end
 
   def perform(port : Int32 = 80_i32, method : String = "HEAD")
-    return if finished? && commandLine
+    return if finished? && progress
     task_elapsed = Time.monotonic
 
     ipRange.each do |ip_address|
