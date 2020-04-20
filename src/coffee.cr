@@ -7,6 +7,7 @@ require "ipaddress"
 require "wrench"
 require "durian"
 
+require "./coffee/extra/*"
 require "./coffee/needle/*"
 require "./coffee/render/*"
 require "./coffee/serialization/*"
