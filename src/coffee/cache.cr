@@ -41,7 +41,7 @@ class Coffee::Cache
     @collects = Immutable::Vector(Entry).new
   end
 
-  def expires_clean
+  def expired_clean
     return unless clean_expired?
 
     reset
@@ -49,7 +49,7 @@ class Coffee::Cache
   end
 
   def <<(entry : Entry)
-    expires_clean
+    expired_clean
     return if full?
 
     _collects = collects << entry
