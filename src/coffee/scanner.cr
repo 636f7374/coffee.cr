@@ -45,7 +45,9 @@ class Coffee::Scanner
   private def render_progress
     return unless commandLine
     return unless _render_pipe = render_pipe
+
     Render::Progress.mark _render_pipe
+    all_finished = false
 
     loop do
       tasks.each do |task|
@@ -55,10 +57,14 @@ class Coffee::Scanner
       finished = true
       sleep 1_i32
 
-      tasks.each { |task| break finished = false unless task.finished? }
-      tasks.size.times { _render_pipe << "\e[A\e[K" } unless finished
+      # Since each sleep is executed for one second, the result may be different before and after sleep.
+      # So we added all_finished, which is used to determine whether it is over again (to prevent the progress bar rendering from malfunctioning).
 
-      break tasks.each &.writer_close if finished
+      tasks.each { |task| break finished = false unless task.finished? }
+      tasks.size.times { _render_pipe << "\e[A\e[K" } unless all_finished
+
+      break tasks.each &.writer_close rescue nil if all_finished
+      next all_finished = true if finished
     end
 
     self.finished = true
@@ -67,10 +73,12 @@ class Coffee::Scanner
   def perform
     channel = Channel(Bool).new
 
-    spawn { handle_task }
-
     spawn do
       render_progress
+    end
+
+    spawn do
+      handle_task
     ensure
       channel.send true
     end

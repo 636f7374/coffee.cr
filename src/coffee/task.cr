@@ -88,6 +88,7 @@ class Coffee::Task
   end
 
   def perform(port : Int32 = 80_i32, method : String = "HEAD")
+    return if finished?
     task_elapsed = Time.monotonic
 
     ipRange.each do |ip_address|
