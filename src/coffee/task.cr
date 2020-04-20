@@ -3,12 +3,12 @@ class Coffee::Task
   property iatas : Array(Needle::IATA)
   property timeout : TimeOut
   property edges : Array(Needle::Edge)
-  property progress : Progress
+  property progress : Progress?
   property finished : Bool
 
-  def initialize(@ipRange : IPAddress, @iatas : Array(Needle::IATA), @timeout : TimeOut = TimeOut.new)
+  def initialize(@ipRange : IPAddress, @iatas : Array(Needle::IATA), @commandLine : Bool = false, @timeout : TimeOut = TimeOut.new)
     @edges = edges
-    @progress = Progress.new ipRange.size
+    @progress = Progress.new ipRange.size if commandLine
     @finished = false
   end
 
@@ -76,11 +76,11 @@ class Coffee::Task
   end
 
   def flush_total
-    progress.flush_total ipRange.size
+    progress.try &.flush_total ipRange.size
   end
 
   def total
-    progress.total
+    progress.try &.total
   end
 
   def finished?
@@ -88,7 +88,7 @@ class Coffee::Task
   end
 
   def perform(port : Int32 = 80_i32, method : String = "HEAD")
-    return unless cache if finished?
+    return if finished? && commandLine
     task_elapsed = Time.monotonic
 
     ipRange.each do |ip_address|
@@ -105,7 +105,7 @@ class Coffee::Task
         socket.write_timeout = timeout.write
       rescue
         socket.try &.close rescue nil
-        progress.added_failure
+        progress.try &.added_failure
 
         next
       end
@@ -119,7 +119,7 @@ class Coffee::Task
         response = HTTP::Client::Response.from_io socket
       rescue
         socket.close rescue nil
-        progress.added_failure
+        progress.try &.added_failure
 
         next
       end
@@ -128,9 +128,9 @@ class Coffee::Task
       socket.close rescue nil
 
       # Check Match
-      next progress.added_invalid unless value = response.headers["CF-RAY"]?
+      next progress.try &.added_invalid unless value = response.headers["CF-RAY"]?
       id, delimiter, iata = value.rpartition "-"
-      next progress.added_invalid unless _iata = Needle::IATA.parse? iata
+      next progress.try &.added_invalid unless _iata = Needle::IATA.parse? iata
 
       matched = false
 
@@ -138,7 +138,7 @@ class Coffee::Task
         break matched = true if _iata == needle
       end
 
-      next progress.added_mismatch unless matched
+      next progress.try &.added_mismatch unless matched
       _timing = Time.monotonic - elapsed
 
       # Write Entry
@@ -148,7 +148,7 @@ class Coffee::Task
       writer.try &.write entry rescue nil
       cache.try &.<< entry
 
-      progress.added_matched
+      progress.try &.added_matched
     end
 
     self.timing = Time.monotonic - task_elapsed

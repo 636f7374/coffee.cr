@@ -9,13 +9,15 @@ module Coffee::Render
     end
 
     def self.push(writer : Writer, task : Task)
+      return unless progress = task.progress
+
       value = String.build do |io|
         io << (task.finished? ? "🍺  " : "🚧  ")
         io << task.ipRange.to_s << "/" << task.ipRange.prefix << " "
-        io << "(" << task.progress.position << "/" << task.progress.total << ")" << " | "
+        io << "(" << progress.position << "/" << progress.total << ")" << " | "
 
-        io << "🎯 : " << task.progress.matched << ", " << "🚫 : " << task.progress.mismatch << ", "
-        io << "⛔️ : " << task.progress.failure << ", " << "⚠️ : " << task.progress.invalid
+        io << "🎯 : " << progress.matched << ", " << "🚫 : " << progress.mismatch << ", "
+        io << "⛔️ : " << progress.failure << ", " << "⚠️ : " << progress.invalid
 
         if task_timing = task.timing
           io << " | " << Elapsed.to_text task_timing

@@ -18,10 +18,10 @@ Options:
   --import                Import scanner Configuration File
 EOF
 else
-  config = Coffee::Config.parse ARGV
+  config = Coffee::Config.parse ARGV, command_line: true
   abort if config.tasks.empty?
 
-  scanner = Coffee::Scanner.new config.tasks, commandLine: true
+  scanner = Coffee::Scanner.new config.tasks, render: true
   scanner.render_pipe = STDOUT if config.progressBar
 
   scanner.perform

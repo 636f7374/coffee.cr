@@ -80,7 +80,7 @@ module Coffee::Serialization
       Writer.new _export
     end
 
-    def to_task(writer : Writer? = nil) : Task?
+    def to_task(writer : Writer? = nil, command_line : Bool = false) : Task?
       return unless needles = iata_needles?
 
       _ip_range = IPAddress.new ipRange rescue nil
@@ -89,7 +89,7 @@ module Coffee::Serialization
       writer = export_to_writer unless writer
       _timeout = timeout || TimeOut.new
 
-      task = Task.new _ip_range, needles, _timeout
+      task = Task.new _ip_range, needles, command_line, _timeout
       task.writer = writer if writer
 
       task

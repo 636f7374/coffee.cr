@@ -1,9 +1,9 @@
 class Coffee::Scanner
   property tasks : Array(Task)
   property total : BigInt | Int32
-  property commandLine : Bool?
+  property render : Bool?
 
-  def initialize(@tasks : Array(Task), @commandLine : Bool? = false)
+  def initialize(@tasks : Array(Task), @render : Bool? = false)
     @total = 0_i32
 
     flush_total
@@ -15,6 +15,10 @@ class Coffee::Scanner
 
   def render_pipe=(value : Writer)
     @renderPipe = value
+  end
+
+  def render_pipe
+    @renderPipe
   end
 
   def finished=(value : Bool)
@@ -34,16 +38,12 @@ class Coffee::Scanner
     @cache
   end
 
-  def render_pipe
-    @renderPipe
-  end
-
   def flush_total
-    tasks.each { |task| self.total += task.total }
+    tasks.each { |task| task.total.try { |_total| self.total += _total } }
   end
 
   private def render_progress
-    return unless commandLine
+    return unless render
     return unless _render_pipe = render_pipe
 
     Render::Progress.mark _render_pipe

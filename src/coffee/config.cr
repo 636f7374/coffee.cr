@@ -11,18 +11,18 @@ class Coffee::Config
     @writer = nil
   end
 
-  def self.parse(args : Array(String))
+  def self.parse(args : Array(String), command_line : Bool = false)
     config = Config.new
 
     config.option_parse args
-    config.unwrap_tasks
+    config.unwrap_tasks command_line
 
     config
   end
 
-  def unwrap_tasks
+  def unwrap_tasks(command_line : Bool = false)
     options.each do |option|
-      next unless task = option.to_task writer
+      next unless task = option.to_task writer, command_line
 
       tasks << task
     end
