@@ -1,4 +1,4 @@
-COFFEE_OUT ?= bin/coffee
+COFFEE_OUT ?= ../bin/coffee
 COFFEE_SRC ?= cli.cr
 SYSTEM_BIN ?= /usr/local/bin
 
@@ -15,4 +15,4 @@ test: shard
 shard:
 	shards build
 clean:
-	rm -f $(COFFEE_OUT)* && rm -rf lib && rm shard.lock
+	rm -f $(COFFEE_OUT)* && rm -rf lib bin && rm shard.lock

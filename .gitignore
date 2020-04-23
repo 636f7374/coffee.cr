@@ -3,3 +3,4 @@ shard.lock
 .vscode
 /lib/
 bin/coffee*
+cli/lib/

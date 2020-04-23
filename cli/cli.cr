@@ -1,4 +1,11 @@
-require "./src/coffee.cr"
+require "option_parser"
+require "json"
+require "yaml"
+
+require "immutable"
+require "ipaddress"
+require "wrench"
+require "durian"
 
 case ARGV[0_i32]?
 when "version", "--version", "-v"
