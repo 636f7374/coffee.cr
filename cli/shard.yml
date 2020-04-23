@@ -2,12 +2,6 @@ name: coffee
 version: 0.1.0
 
 dependencies:
-  wrench:
-    github: 64726f70/wrench.cr
-  ipaddress:
-    github: Sija/ipaddress.cr
-  immutable:
-    github: lucaong/immutable
   durian:
     github: 636f7374/durian.cr
 
