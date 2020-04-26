@@ -92,12 +92,13 @@ class Coffee::Task
     task_elapsed = Time.monotonic
 
     ipRange.each do |ip_address|
+      break if cache.try &.ip_range_full?(ipRange) && cache.try &.not_expired?
       break if cache.try &.full? && cache.try &.not_expired?
 
       elapsed = Time.monotonic
 
       # Create Socket
-      _ip_address = Socket::IPAddress.new ip_address.to_s, port
+      _ip_address = Socket::IPAddress.new ip_address.address, port
 
       begin
         socket = TCPSocket.new _ip_address, connect_timeout: timeout.connect
@@ -112,7 +113,7 @@ class Coffee::Task
 
       # Write & Read Payload
       request = HTTP::Request.new method, "/"
-      request.header_host = ip_address.to_s
+      request.header_host = ip_address.address
 
       begin
         request.to_io socket
@@ -142,11 +143,11 @@ class Coffee::Task
       _timing = Time.monotonic - elapsed
 
       # Write Entry
-      entry = Entry.new _ip_address, _iata.to_edge?, _iata
+      entry = Entry.new _ip_address, ip_address, _iata.to_edge?, _iata
       entry.timing = _timing
 
       writer.try &.write entry rescue nil
-      cache.try &.<< entry
+      cache.try &.<< entry, ipRange
 
       progress.try &.added_matched
     end

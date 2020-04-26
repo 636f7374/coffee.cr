@@ -2,12 +2,14 @@ class Coffee::Entry
   include JSON::Serializable
 
   property ipAddress : Socket::IPAddress
+  property superIpAddress : IPAddress
   property edge : Needle::Edge?
   property iata : Needle::IATA?
   property timing : Time::Span?
   property createdAt : Time
 
-  def initialize(@ipAddress : Socket::IPAddress, @edge : Needle::Edge? = nil, @iata : Needle::IATA? = nil, @timing : Time::Span? = nil)
+  def initialize(@ipAddress : Socket::IPAddress, @superIpAddress : IPAddress, @edge : Needle::Edge? = nil,
+                 @iata : Needle::IATA? = nil, @timing : Time::Span? = nil)
     @createdAt = Time.local
   end
 
