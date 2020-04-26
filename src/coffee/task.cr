@@ -92,9 +92,23 @@ class Coffee::Task
     task_elapsed = Time.monotonic
 
     ipRange.each do |ip_address|
-      break if cache.try &.ip_range_full?(ipRange) && cache.try &.not_expired?
-      break if cache.try &.full? && cache.try &.not_expired?
+      # If caching is enabled, it will break if it expired
+      timed_out = false
 
+      cache.try do |_cache|
+        timed_out = true if _cache.cleanInterval <= (Time.monotonic - task_elapsed)
+      end
+
+      break if timed_out
+
+      # If the cache is full, break, If half full, sleep for 5 seconds
+      if cache.try &.not_expired?
+        break if cache.try &.ip_range_full? ipRange
+        break if cache.try &.full?
+        sleep 5_i32.seconds if cache.try &.half_full?
+      end
+
+      # To get Timing
       elapsed = Time.monotonic
 
       # Create Socket
@@ -134,12 +148,10 @@ class Coffee::Task
       next progress.try &.added_invalid unless _iata = Needle::IATA.parse? iata
 
       matched = false
-
-      iatas.each do |needle|
-        break matched = true if _iata == needle
-      end
-
+      iatas.each { |needle| break matched = true if _iata == needle }
       next progress.try &.added_mismatch unless matched
+
+      # To get Timing
       _timing = Time.monotonic - elapsed
 
       # Write Entry

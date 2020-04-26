@@ -29,8 +29,8 @@ class Coffee::Cache
     capacity <= size
   end
 
-  def not_full?
-    !full?
+  def half_full?
+    (capacity / 2_i32 - size) <= 0_i32
   end
 
   def size
@@ -57,11 +57,15 @@ class Coffee::Cache
     @collects = Immutable::Vector(Entry).new
   end
 
+  def expired_clean!
+    reset
+    refresh
+  end
+
   def expired_clean
     return unless clean_expired?
 
-    reset
-    refresh
+    expired_clean!
   end
 
   def <<(entry : Entry, ip_range : IPAddress)

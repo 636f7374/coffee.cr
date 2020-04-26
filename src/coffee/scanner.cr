@@ -98,7 +98,9 @@ class Coffee::Scanner
         end
       end
 
-      tasks.size.times { channel.receive }
+      tasks.size.times do
+        channel.receive
+      end
 
       if cache.try &.full?
         sleep 30_i32.seconds
