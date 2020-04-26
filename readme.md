@@ -1,7 +1,7 @@
 <div align = "center"><img src="images/icon.png" width="256" height="256" /></div>
 
 <div align = "center">
-  <h1>Coffee.cr - Cloudflare Edge Server Scanner</h1>
+  <h1>Coffee.cr - Cloudflare Edge Server Booster</h1>
 </div>
 
 <p align="center">
