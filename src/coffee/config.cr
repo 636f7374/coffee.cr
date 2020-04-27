@@ -14,6 +14,7 @@ class Coffee::Config
   def self.parse(args : Array(String), command_line : Bool = false)
     config = Config.new
 
+    config.progressBar = false unless command_line
     config.option_parse args
     config.unwrap_tasks command_line
 
@@ -24,10 +25,83 @@ class Coffee::Config
     options.each do |option|
       next unless task = option.to_task writer, command_line
 
-      tasks << task
+      self.tasks << task
     end
 
     options.clear
+  end
+
+  def self.default : Config
+    config = new
+
+    option = Serialization::Option.new
+    option.ipRange = "172.64.160.0/20"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "172.64.96.0/20"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "162.159.132.0/24"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "162.159.36.0/24"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "162.159.128.0/19"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "141.101.120.0/22"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "190.93.244.0/22"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    option = Serialization::Option.new
+    option.ipRange = "198.41.214.0/23"
+    option.needles = "asia"
+    option.excludes.try &.needles = "sin"
+    option.excludes.try &.type = "iata"
+    option.type = "region"
+    config.options << option
+
+    config.progressBar = false
+    config.unwrap_tasks command_line: false
+
+    config
   end
 
   def unwrap_options(path : String)
