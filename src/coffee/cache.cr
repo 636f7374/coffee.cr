@@ -1,11 +1,11 @@
 class Coffee::Cache
-  property collects : Immutable::Vector(Entry)
+  property storage : Immutable::Vector(Entry)
   property capacity : Int32
   property cleanInterval : Time::Span
   property cleanAt : Time
   property rangeCapacity : Int32
 
-  def initialize(@collects : Immutable::Vector(Entry) = Immutable::Vector(Entry).new, @capacity : Int32 = 5_i32,
+  def initialize(@storage : Immutable::Vector(Entry) = Immutable::Vector(Entry).new, @capacity : Int32 = 5_i32,
                  @cleanInterval : Time::Span = 180_i32.seconds, taskCount : Int32 = 0_i32)
     @cleanAt = Time.local
     @rangeCapacity = Cache.maximum_range_capacity capacity, taskCount
@@ -19,7 +19,7 @@ class Coffee::Cache
   end
 
   def ip_range_full?(ip_range : IPAddress) : Bool
-    count = collects.count { |collect| ip_range.includes? collect.superIpAddress }
+    count = storage.count { |collect| ip_range.includes? collect.superIpAddress }
     return true if rangeCapacity <= count
 
     false
@@ -34,11 +34,11 @@ class Coffee::Cache
   end
 
   def size
-    collects.size
+    storage.size
   end
 
   def empty?
-    collects.empty?
+    storage.empty?
   end
 
   def refresh
@@ -54,7 +54,7 @@ class Coffee::Cache
   end
 
   def reset
-    @collects = Immutable::Vector(Entry).new
+    @storage = Immutable::Vector(Entry).new
   end
 
   def expired_clean!
@@ -73,20 +73,21 @@ class Coffee::Cache
     return if ip_range_full? ip_range
     return if full?
 
-    _collects = collects << entry
-    self.collects = _collects
+    _storage = storage << entry
+    self.storage = _storage
 
     refresh
   end
 
   def to_ip_address(port : Int32) : Array(Socket::IPAddress)?
-    return if collects.empty?
-    collects.map { |item| Socket::IPAddress.new item.ipAddress.address, port }
+    return if storage.empty?
+
+    storage.map { |item| Socket::IPAddress.new item.ipAddress.address, port }
   end
 
   def to_ip_address : Array(Socket::IPAddress)?
-    return if collects.empty?
+    return if storage.empty?
 
-    collects.map &.ipAddress
+    storage.map &.ipAddress
   end
 end
