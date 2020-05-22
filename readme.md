@@ -19,52 +19,55 @@
 
 ## Description
 
-* It can effectively reduce the time spent connecting to `Cloudflare` Pop Edge Server.
-  * For now, it only supports Cloudflare (I.e. AS13335).
-* It uses fiber optics to request Cloudflare Pop Edge Server in parallel.
-  * It can be used as CommandLine or CrystalShard.
-* If IP address caching is enabled and command line mode is disabled.
-  * It will be refreshed in the fiber (default refresh every three minutes, capacity is five).
-* It will skip the (I.e. IATA / Edge / Region) Pop Edge Server not specified by you.
-* You don't need to scan too many IP Ranges
-  * because these scan results will change after a while.
+* It is used to speed up the connection to Cloudflare Pop Edge Server
+  * Compared to Cloudflare Argo Tunnel `2x - 4x faster`
+* It can be used as Command Line or Crystal Shard
+* It can filter the server of the country or region you specified
+  * IATA (E.g. `TNR`)
+  * Edge (E.g. `Antananarivo_Madagascar`)
+  * Region (E.g. `Africa`)
+* It is compatible with Crystal Durian.cr Domain Name System Resolver
 
-### Story
 
-* Imagine that if you live in France, Cloudflare AnyCast causes you to connect to Pop Edge Server in the United States.
-  * Which will greatly slow down your Internet speed, So what should you do?
-* Fortunately, Cloudflare provides a method for detecting Pop Edge Server IATA that the server currently belongs to.
-  * When requesting the Cloudflare IP address, Cloudflare will return the `CF-RAY` HTTP header, which contains `IATA`.
-* In our actual tests, this will improve 2x - 4x network performance.
-* Since Cloudflare Pop Edge Server is floating, the geographic location will change with time, a few minutes / hours.
-  * Therefore, it needs to be scanned every once in a while.
-  * When it is used as a shard, it will continue to run in other fibers without interruption.
+### Why Using
+
+* You want to connect to the Cloudflare Pop Edge Server in or near your home country.
+  * For example, if you live in France, you want to connect to a server in France.
+  * But because of your internet or AnyCast or free plan.
+  * Leading to Cloudflare not choosing the best route for you.
+  * You finally got LAX (Los Angeles), SJC (San Jose), AMS (Amsterdam) ...
+  * You are frustrated, so you use this, It quickly matches the best route for you.
+* It uses `CF-RAY` HTTP Header to determine the geographical location of the server.
+  * LACP (Link Aggregation Control Protocol)
+  * This usually improves Link aggregation speed.
+* The results are time-sensitive and usually only last for a while.
+  * So it will be suitable to use it as Crystal Shard.
 
 ### Fact
 
-* In actual situations, it effectively improves the access speed of our customers in mainland China.
-  * Our customers can quickly connect to Cloudflare Asia Pop Edge Server (E.g. HongKong) through the built-in Coffee.cr.
-  * If you are in Asia, you want to connect to Pop Edge Server in Asia instead of America, France, Amsterdam.
-  * (Especially in crowded periods, the effect is very obvious).
+* We created it to increase the speed of our Chinese customers connecting to the "International" Internet.
+  * After using it, Chinese users will connect to Cloudflare Pop Edge Server in Hong Kong, Singapore.
+  * In bad network environment, speed up YouTube from 480P to 1080P. 
 
 ### Features
 
-* [X] It is thread-safe, which means you ca n’t go wrong when using multithreading.
+* [X] It can be perfectly combined with Crystal Domain Name System Resolver: [Durian.cr](https://github.com/636f7374/durian.cr).
 * [X] It can be used as Command Line and Shard.
 * [X] It can maximize the choice of geographic location IATA / Edge / Region.
 * [X] It can increase the network speed of servers hosted on CLoudflare (Client).
 * [X] Loosely coupled design, clean syntax, high performance.
-* [ ] Command Line local SOCKS5 turbo server.
-* [X] It can be perfectly combined with Crystal DNS Resolver: [Durian.cr](https://github.com/636f7374/durian.cr).
+* [ ] Command Line local turbo server.
+* [X] It is thread-safe, which means you ca n’t go wrong when using multithreading.
+
+### Tips
+
+* Command Line
+  * You can specify a different export location for each scan through the configuration file.
+  * Or use ARGV to specify a single export location.
 
 ### Sample
 
 * Coffee - Import
-
-```text
-You can specify a different export location for each scan through the configuration file.
-Or use ARGV to specify a single export location.
-```
 
 ```yaml
 - ipRange: 198.41.214.0/23
