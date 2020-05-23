@@ -6,8 +6,6 @@ dependencies:
     github: 64726f70/wrench.cr
   ipaddress:
     github: Sija/ipaddress.cr
-  immutable:
-    github: lucaong/immutable
 
 authors:
   - 636f7374

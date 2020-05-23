@@ -2,7 +2,6 @@ require "option_parser"
 require "json"
 require "yaml"
 
-require "immutable"
 require "ipaddress"
 require "wrench"
 

@@ -1,14 +1,16 @@
 class Coffee::Cache
-  property storage : Immutable::Vector(Entry)
+  property storage : Array(Entry)
   property capacity : Int32
   property cleanInterval : Time::Span
   property cleanAt : Time
   property rangeCapacity : Int32
+  property mutex : Mutex
 
-  def initialize(@storage : Immutable::Vector(Entry) = Immutable::Vector(Entry).new, @capacity : Int32 = 5_i32,
+  def initialize(@storage : Array(Entry) = Array(Entry).new, @capacity : Int32 = 5_i32,
                  @cleanInterval : Time::Span = 180_i32.seconds, taskCount : Int32 = 0_i32)
     @cleanAt = Time.local
     @rangeCapacity = Cache.maximum_range_capacity capacity, taskCount
+    @mutex = Mutex.new :unchecked
   end
 
   def self.maximum_range_capacity(capacity : Int32, task_count : Int32)
@@ -54,7 +56,7 @@ class Coffee::Cache
   end
 
   def reset
-    @storage = Immutable::Vector(Entry).new
+    self.storage.clear
   end
 
   def expired_clean!
@@ -69,14 +71,16 @@ class Coffee::Cache
   end
 
   def <<(entry : Entry, ip_range : IPAddress)
-    expired_clean
-    return if ip_range_full? ip_range
-    return if full?
+    @mutex.synchronize do
+      expired_clean
+      return if ip_range_full? ip_range
+      return if full?
 
-    _storage = storage << entry
-    self.storage = _storage
+      _storage = storage << entry
+      self.storage = _storage
 
-    refresh
+      refresh
+    end
   end
 
   def to_ip_address(port : Int32) : Array(Socket::IPAddress)?
