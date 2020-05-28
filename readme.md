@@ -29,7 +29,7 @@
 * It is compatible with Crystal Durian.cr Domain Name System Resolver
 
 
-### Why Using
+## Why Use
 
 * You want to connect to the Cloudflare Pop Edge Server in or near your home country.
   * For example, if you live in France, you want to connect to a server in France.
@@ -43,13 +43,13 @@
 * The results are time-sensitive and usually only last for a while.
   * So it will be suitable to use it as Crystal Shard.
 
-### Fact
+## Fact
 
 * We created it to increase the speed of our Chinese customers connecting to the "International" Internet.
   * After using it, Chinese users will connect to Cloudflare Pop Edge Server in Hong Kong, Singapore.
   * In bad network environment, speed up YouTube from 480P to 1080P. 
 
-### Features
+## Features
 
 * [X] It can be perfectly combined with Crystal Domain Name System Resolver: [Durian.cr](https://github.com/636f7374/durian.cr).
 * [X] It can be used as Command Line and Shard.
@@ -59,15 +59,15 @@
 * [ ] Command Line local turbo server.
 * [X] It is thread-safe, which means you ca n’t go wrong when using multithreading.
 
-### Tips
+## Tips
 
 * Command Line
   * You can specify a different export location for each scan through the configuration file.
   * Or use ARGV to specify a single export location.
 
-### Sample
+## Example
 
-* Coffee - Import
+* Import
 
 ```yaml
 - ipRange: 198.41.214.0/23
@@ -182,7 +182,7 @@
   type: region
 ```
 
-* Coffee - Export
+* Export
 
 ```text
 {"ipAddress":"162.159.36.5","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:15:43.971333000Z","timing":"171.98ms"}
@@ -208,21 +208,9 @@
 {"ipAddress":"162.159.36.241","edge":"HongKong","iata":"HKG","createdAt":"2020-04-10T01:18:53.381347000Z","timing":"168.33ms"}
 ```
 
-## Use Coffee
+## Usage
 
-### Used as Shard
-
-Add this to your application's shard.yml:
-
-```yaml
-dependencies:
-  coffee:
-    github: 636f7374/coffee.cr
-```
-
-### Usage
-
-* Coffee - Example
+### Example
 
 ```crystal
 require "coffee"
@@ -234,6 +222,16 @@ scanner = Coffee::Scanner.new config.tasks, commandLine: true
 scanner.render_pipe = STDOUT
 
 scanner.perform
+```
+
+### Used as Shard
+
+Add this to your application's shard.yml:
+
+```yaml
+dependencies:
+  coffee:
+    github: 636f7374/coffee.cr
 ```
 
 ### Installation
