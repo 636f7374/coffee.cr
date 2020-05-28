@@ -65,7 +65,7 @@
   * You can specify a different export location for each scan through the configuration file.
   * Or use ARGV to specify a single export location.
 
-## Example
+## Import and Export
 
 * Import
 
@@ -210,7 +210,7 @@
 
 ## Usage
 
-### Example
+* Simple Example
 
 ```crystal
 require "coffee"
