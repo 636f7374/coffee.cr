@@ -1,5 +1,5 @@
 module Coffee::Serialization
-  class Option
+  class Range
     include YAML::Serializable
 
     property ipRange : String
