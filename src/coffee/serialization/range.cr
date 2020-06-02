@@ -11,7 +11,7 @@ module Coffee::Serialization
 
     def initialize
       @ipRange = String.new
-      @export = String.new
+      @export = nil
       @needles = String.new
       @excludes = Exclude.new
       @timeout = TimeOut.new
