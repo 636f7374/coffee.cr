@@ -1,0 +1,75 @@
+name: Continuous Delivery
+
+on: 
+  release:
+    types:
+      - created
+
+jobs:
+  linux:
+    name: Continuous Delivery - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: 
+        - ubuntu-latest
+    container:
+      image: crystallang/crystal
+    steps:
+    - name: Actions - Use CheckOut@V2
+      uses: actions/checkout@v2
+    - name: Install - Coffee Dependencies
+      run: shards install
+    - name: Test - Crystal Spec
+      run: crystal spec --error-trace --stats --progress --no-debug
+    - name: Deploy - Create Directory
+      run: mkdir -p bin/linux
+    - name: Deploy - Coffee Build
+      run: crystal build src/coffee.cr -s --release --no-debug -o bin/linux/coffee
+    - name: Deploy - Create Archive
+      run: tar -cvzf Coffee_Linux.tar.gz bin/linux/coffee
+    - name: Actions - Upload Release
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./Coffee_Linux.tar.gz
+        asset_name: Coffee_Linux.tar.gz
+        asset_content_type: application/x-gzip
+
+  macOS:
+    name: Continuous Delivery - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: 
+        - macOS-latest
+    steps:
+    - name: Actions - Use CheckOut@V2
+      uses: actions/checkout@v2
+    - name: Install - Brew Package Management
+      run: brew update
+    - name: Install - Crystal Language
+      run: brew install crystal
+    - name: Install - Coffee Dependencies
+      run: shards install
+    - name: Test - Crystal Spec
+      run: crystal spec --error-trace --stats --progress --no-debug
+    - name: Deploy - Create Directory
+      run: mkdir -p bin/darwin
+    - name: Deploy - Coffee Build
+      run: crystal build src/coffee.cr -s --no-debug -o bin/darwin/coffee
+    - name: Deploy - Create Archive
+      run: tar -cvzf Coffee_macOS.tar.gz bin/darwin/coffee
+    - name: Actions - Upload Release
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ github.event.release.upload_url }}
+        asset_path: ./Coffee_macOS.tar.gz
+        asset_name: Coffee_macOS.tar.gz
+        asset_content_type: application/x-gzip
