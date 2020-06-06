@@ -1,30 +1,30 @@
 language: generic
 services:
-- docker
+  - docker
 matrix:
   include:
-  - os: linux
-    dist: trusty
-    env:
-    - DEPLOY_FILENAME=Coffee_Linux.tar.gz
-    - DEPLOY_DIR=bin/linux
-    - DEPLOY_STATIC="--static"
-  - os: osx
-    env:
-    - DEPLOY_FILENAME=Coffee_macOS.tar.gz
-    - DEPLOY_DIR=bin/darwin
-    - DEPLOY_STATIC=""
-    - LDFLAGS=-L/usr/local/opt/openssl/lib
-    - CPPFLAGS=-I/usr/local/opt/openssl/include
-    - PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
-    - PATH=/usr/local/opt/openssl/bin:$PATH
+    - os: linux
+      dist: trusty
+      env:
+        - DEPLOY_FILENAME=Coffee_Linux.tar.gz
+        - DEPLOY_DIR=bin/linux
+        - DEPLOY_STATIC="--static"
+    - os: osx
+      env:
+        - DEPLOY_FILENAME=Coffee_macOS.tar.gz
+        - DEPLOY_DIR=bin/darwin
+        - DEPLOY_STATIC=""
+        - LDFLAGS=-L/usr/local/opt/openssl/lib
+        - CPPFLAGS=-I/usr/local/opt/openssl/include
+        - PKG_CONFIG_PATH=/usr/local/opt/openssl/lib/pkgconfig
+        - PATH=/usr/local/opt/openssl/bin:$PATH
 install:
-- chmod +x bin/ci
-- bin/ci prepare_build
+  - chmod +x bin/ci
+  - bin/ci prepare_build
 script:
-- bin/ci build
+  - bin/ci build
 after_success:
-- bin/ci deploy
+  - bin/ci deploy
 deploy:
   provider: releases
   api_key:

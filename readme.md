@@ -7,8 +7,8 @@
 <p align="center">
   <a href="https://crystal-lang.org">
     <img src="https://img.shields.io/badge/built%20with-crystal-000000.svg" /></a>
-  <a href="https://travis-ci.org/636f7374/coffee.cr">
-    <img src="https://api.travis-ci.org/636f7374/coffee.cr.svg" /></a>
+  <a href="https://github.com/636f7374/coffee.cr/actions">
+    <img src="https://github.com/636f7374/coffee.cr/workflows/Continuous%20Integration/badge.svg" /></a>
   <a href="https://github.com/636f7374/coffee.cr/releases">
     <img src="https://img.shields.io/github/release/636f7374/coffee.cr.svg" /></a>
   <a href="https://github.com/636f7374/coffee.cr/blob/master/license">
