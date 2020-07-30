@@ -2,7 +2,7 @@ module Coffee::Render
   module Progress
     def self.mark(writer : Writer)
       value = String.build do |io|
-        io << "Mark: " << "🎯  (Matchd) | 🚫  (Mismatch) | ⛔️  (Failure) | ⚠️  (Invalid)"
+        io << "Info: " << "🎯  (Matched) | 🚫  (Mismatch) | ⛔️  (Failure) | ⚠️  (Invalid)"
       end
 
       writer.write value
