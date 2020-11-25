@@ -71,39 +71,34 @@ class Coffee::Scanner
   end
 
   def perform
-    channel = Channel(Bool).new
-
     spawn do
       render_progress
     end
 
     spawn do
       handle_task
-    ensure
-      channel.send true
     end
 
-    channel.receive
+    loop do
+      break if finished?
+
+      sleep 1_i32.seconds
+    end
   end
 
   private def handle_task
-    until finished?
-      channel = Channel(Bool).new
-
-      tasks.each do |task|
-        spawn do
+    tasks.each do |task|
+      spawn do
+        until finished?
           task.perform
-        ensure
-          channel.send true
+
+          break if render && task.finished?
+          sleep 1_i32.seconds
+
+          if cache.try &.full?
+            sleep 30_i32.seconds
+          end
         end
-      end
-
-      tasks.size.times do
-        channel.receive
-      end
-
-      if cache.try &.full?
-        sleep 30_i32.seconds
       end
     end
   end

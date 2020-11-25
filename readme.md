@@ -20,7 +20,6 @@
 ## Description
 
 * It is used to speed up the connection to Cloudflare Pop Edge Server
-  * Compared to Cloudflare Argo Tunnel `2x - 4x faster`
 * It can be used as Command Line or Crystal Shard
 * It can filter the server of the country or region you specified
   * IATA (E.g. `TNR`)
@@ -47,7 +46,7 @@
 
 * We created it to increase the speed of our Chinese customers connecting to the "International" Internet.
   * After using it, Chinese users will connect to Cloudflare Pop Edge Server in Hong Kong, Singapore.
-  * In bad network environment, speed up YouTube from 480P to 1080P. 
+  * In bad network environment, speed up YouTube from 480P to 1080P60. 
 
 ## Features
 
