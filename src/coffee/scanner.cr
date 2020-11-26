@@ -75,7 +75,9 @@ class Coffee::Scanner
       render_progress
     end
 
-    handle_task
+    spawn do
+      handle_task
+    end
 
     loop do
       break if finished?
