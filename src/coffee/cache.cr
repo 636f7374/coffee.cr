@@ -14,36 +14,39 @@ class Coffee::Cache
   end
 
   def self.maximum_range_capacity(capacity : Int32, task_count : Int32)
-    range_capacity = (capacity / task_count).round.to_i32
+    range_capacity = (capacity / task_count).round.to_i32 rescue nil
+    range_capacity ||= 0_i32
     range_capacity = 1_i32 if range_capacity <= 0_i32
 
     range_capacity
   end
 
   def ip_range_full?(ip_range : IPAddress) : Bool
-    count = storage.count { |collect| ip_range.includes? collect.superIpAddress }
-    return true if rangeCapacity <= count
+    @mutex.synchronize do
+      count = storage.count { |collect| ip_range.includes? collect.superIpAddress }
+      return true if rangeCapacity <= count
 
-    false
+      false
+    end
   end
 
   def full?
-    capacity <= size
+    capacity <= self.size
   end
 
   def half_full?
-    (capacity / 2_i32 - size) <= 0_i32
+    (capacity / 2_i32 - self.size) <= 0_i32
   end
 
   def size
-    storage.size
+    @mutex.synchronize { storage.size }
   end
 
-  def empty?
-    storage.empty?
+  def empty? : Bool
+    @mutex.synchronize { storage.empty? }
   end
 
-  def refresh
+  def refresh_clean_at
     @cleanAt = Time.local
   end
 
@@ -55,13 +58,13 @@ class Coffee::Cache
     !clean_expired?
   end
 
-  def reset
-    self.storage.clear
+  def clear
+    @mutex.synchronize { self.storage.clear }
   end
 
   def expired_clean!
-    reset
-    refresh
+    self.clear
+    refresh_clean_at
   end
 
   def expired_clean
@@ -71,27 +74,27 @@ class Coffee::Cache
   end
 
   def <<(entry : Entry, ip_range : IPAddress)
+    expired_clean
+    return if ip_range_full? ip_range
+    return if full?
+
     @mutex.synchronize do
-      expired_clean
-      return if ip_range_full? ip_range
-      return if full?
-
-      _storage = storage << entry
-      self.storage = _storage
-
-      refresh
+      storage << entry
+      refresh_clean_at
     end
   end
 
   def to_ip_address(port : Int32) : Array(Socket::IPAddress)?
     return if storage.empty?
 
-    storage.map { |item| Socket::IPAddress.new item.ipAddress.address, port }
+    @mutex.synchronize do
+      storage.map { |item| Socket::IPAddress.new item.ipAddress.address, port }
+    end
   end
 
   def to_ip_address : Array(Socket::IPAddress)?
     return if storage.empty?
 
-    storage.map &.ipAddress
+    @mutex.synchronize { storage.map &.ipAddress }
   end
 end
