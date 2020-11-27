@@ -4,7 +4,7 @@ module Coffee::Serialization
 
     property ipRange : String
     property export : String?
-    property needles : String | Array(String)
+    property needles : String | Array(String | NeedleEntry)
     property excludes : Exclude?
     property timeout : TimeOut?
     property type : String
@@ -18,55 +18,96 @@ module Coffee::Serialization
       @type = String.new
     end
 
-    def to_iata_needles?(needles : String | Array(String), flag : Needle::Flag) : Array(Needle::IATA)?
-      list = [] of Needle::IATA
-
-      case flag
-      when .iata?
-        case needles
-        when Array(String)
-          needles.each do |item|
+    def parse_iata_needles(needles : String | Array(String | NeedleEntry), list : Array(Tuple(Needle::IATA, Int32)))
+      case needles
+      when Array(String | NeedleEntry)
+        needles.each do |item|
+          if item.is_a? String
             _item = Needle::IATA.parse? item
 
-            list << _item if _item
-          end
-        when String
-          _item = Needle::IATA.parse? needles
+            list << Tuple.new _item, 1_i32 if _item
+          else
+            _item = Needle::IATA.parse? item.value
+            _priority = item.priority || 0_i32
 
-          list << _item if _item
-        else
+            list << Tuple.new _item, _priority if _item
+          end
         end
-      when .edge?
-        case needles
-        when Array(String)
-          needles.each do |item|
+      when String
+        _item = Needle::IATA.parse? needles
+
+        list << Tuple.new _item, 1_i32 if _item
+      end
+    end
+
+    def parse_edge_needles(needles : String | Array(String | NeedleEntry), list : Array(Tuple(Needle::IATA, Int32)))
+      case needles
+      when Array(String | NeedleEntry)
+        needles.each do |item|
+          if item.is_a? String
             _edge = Needle::Edge.parse? item
             _item = _edge.to_iata? if _edge
 
-            list << _item if _item
-          end
-        when String
-          _edge = Needle::Edge.parse? needles
-          _item = _edge.to_iata? if _edge
+            list << Tuple.new _item, 1_i32 if _item
+          else
+            _edge = Needle::Edge.parse? item.value
+            _item = _edge.to_iata? if _edge
+            _priority = item.priority || 0_i32
 
-          list << _item if _item
-        else
+            list << Tuple.new _item, _priority if _item
+          end
         end
-      when .region?
-        case needles
-        when Array(String)
-          needles.each do |item|
+      when String
+        _edge = Needle::Edge.parse? needles
+        _item = _edge.to_iata? if _edge
+
+        list << Tuple.new _item, 1_i32 if _item
+      else
+      end
+    end
+
+    def parse_region_needles(needles : String | Array(String | NeedleEntry), list : Array(Tuple(Needle::IATA, Int32)))
+      case needles
+      when Array(String | NeedleEntry)
+        needles.each do |item|
+          if item.is_a? String
             _region = Needle::Region.parse? item
             next unless _region
 
-            _region.each { |item| list << item }
-          end
-        when String
-          _region = Needle::Region.parse? needles
+            _region.each do |region_item|
+              list << Tuple.new region_item, 1_i32
+            end
+          else
+            _region = Needle::Region.parse? item.value
+            next unless _region
 
-          _region.try &.each { |item| list << item }
-        else
+            _priority = item.priority || 0_i32
+
+            _region.each do |region_item|
+              list << Tuple.new region_item, _priority
+            end
+          end
         end
+      when String
+        _region = Needle::Region.parse? needles
+
+        _region.try &.each do |region_item|
+          list << Tuple.new region_item, 1_i32
+        end
+      else
+      end
+    end
+
+    def to_iata_needles?(needles : String | Array(String | NeedleEntry), flag : Needle::Flag) : Array(Tuple(Needle::IATA, Int32))?
+      list = [] of Tuple(Needle::IATA, Int32)
+
+      case flag
+      when .iata?
+        parse_iata_needles needles, list
+      when .edge?
+        parse_edge_needles needles, list
+      when .region?
+        parse_region_needles needles, list
       end
 
       return if list.empty?
@@ -81,12 +122,18 @@ module Coffee::Serialization
       Writer.new _export
     end
 
-    def exclude_needles(iatas : Array(Needle::IATA)) : Array(Needle::IATA)
+    def exclude_needles(iatas : Array(Tuple(Needle::IATA, Int32))) : Array(Tuple(Needle::IATA, Int32))
       return iatas unless _excludes = excludes
       return iatas unless flag = Needle::Flag.parse? _excludes.type
       return iatas unless _excludes = to_iata_needles? _excludes.needles, flag
 
-      _excludes.each { |exclude| iatas.delete exclude }
+      _excludes.each do |_exclude_item|
+        iatas.each do |iata|
+          if _excludes.first == iata.first
+            iatas.delete Tuple.new _exclude_item.first, _exclude_item.last
+          end
+        end
+      end
 
       iatas
     end
@@ -118,6 +165,16 @@ module Coffee::Serialization
       def initialize
         @needles = String.new
         @type = String.new
+      end
+    end
+
+    class NeedleEntry
+      include YAML::Serializable
+
+      property value : String
+      property priority : Int32?
+
+      def initialize(@value : String, @priority : Int32 = 1_i32)
       end
     end
   end

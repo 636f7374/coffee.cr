@@ -1,26 +1,27 @@
 class Coffee::Task
   property ipRange : IPAddress
-  property iatas : Array(Needle::IATA)
+  property iatas : Array(Tuple(Needle::IATA, Int32))
   property timeout : TimeOut
-  property edges : Array(Needle::Edge)
+  property edges : Array(Tuple(Needle::Edge, Int32))
   property progress : Progress?
   property finished : Bool
 
-  def initialize(@ipRange : IPAddress, @iatas : Array(Needle::IATA), commandLine : Bool = false, @timeout : TimeOut = TimeOut.new)
+  def initialize(@ipRange : IPAddress, @iatas : Array(Tuple(Needle::IATA, Int32)), commandLine : Bool = false,
+                 @timeout : TimeOut = TimeOut.new)
     @edges = edges
     @progress = Progress.new ipRange.size if commandLine
     @finished = false
   end
 
-  def self.new(ip_range : String, needles : Array(Needle::IATA), timeout : TimeOut = TimeOut.new)
+  def self.new(ip_range : String, needles : Array(Tuple(Needle::IATA, Int32)), timeout : TimeOut = TimeOut.new)
     return unless _ip_range = IPAddress.new ip_range
 
     new _ip_range, writer, needles, timeout
   end
 
-  def self.new(ip_range : String, needles : Array(Needle::Edge), timeout : TimeOut = TimeOut.new)
+  def self.new(ip_range : String, needles : Array(Tuple(Needle::Edge, Int32)), timeout : TimeOut = TimeOut.new)
     return unless _ip_range = IPAddress.new ip_range
-    return unless _needles = needles.map &.to_iata?
+    return unless _needles = needles.map { |needle| Tuple.new needle.first.to_iata?, needle.last }
 
     new _ip_range, writer, _needles, timeout
   end
@@ -28,15 +29,14 @@ class Coffee::Task
   def self.new(ip_range : String, needle : Needle::IATA, timeout : TimeOut = TimeOut.new)
     return unless _ip_range = IPAddress.new ip_range
 
-    new _ip_range, writer, [needle], timeout
+    new _ip_range, writer, [Tuple.new needle, 1_i32], timeout
   end
 
   def self.new(ip_range : String, needle : Needle::Edge, timeout : TimeOut = TimeOut.new)
     return unless _ip_range = IPAddress.new ip_range
-    _needles = needle.map &.to_iata?
-    return if _needle.empty? || _needle.is_a? Array(Nil)
+    return unless _needle = needle.to_iata?
 
-    new _ip_range, writer, _needles, timeout
+    new _ip_range, writer, [Tuple.new _needle, 1_i32], timeout
   end
 
   def timing=(value : Time::Span)
@@ -147,15 +147,24 @@ class Coffee::Task
       id, delimiter, iata = value.rpartition "-"
       next progress.try &.added_invalid unless _iata = Needle::IATA.parse? iata
 
+      priority = 1_i32
       matched = false
-      iatas.each { |needle| break matched = true if _iata == needle }
+
+      iatas.each do |needle|
+        if _iata == needle.first
+          priority = needle.last
+
+          break matched = true
+        end
+      end
+
       next progress.try &.added_mismatch unless matched
 
       # To get Timing
       _timing = Time.monotonic - elapsed
 
       # Write Entry
-      entry = Entry.new _ip_address, ip_address, _iata.to_edge?, _iata
+      entry = Entry.new _ip_address, ip_address, _iata.to_edge?, _iata, priority: priority
       entry.timing = _timing
 
       writer.try &.write entry rescue nil
@@ -168,12 +177,14 @@ class Coffee::Task
     self.finished = true
   end
 
-  def edges : Array(Needle::Edge)
-    edges = [] of Needle::Edge
+  def edges : Array(Tuple(Needle::Edge, Int32))
+    edges = [] of Tuple(Needle::Edge, Int32)
 
     iatas.each do |item|
-      _edge = Needle::Edge.parse? item
-      edges << _edge if _edge
+      _edge = Needle::Edge.parse? item.first
+      _priority = item.last
+
+      edges << Tuple.new _edge, _priority if _edge
     end
 
     edges
