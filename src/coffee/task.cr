@@ -91,6 +91,9 @@ class Coffee::Task
     return if finished? && progress
     task_elapsed = Time.monotonic
 
+    # Set the minimum number of attempts, high priority IP is not always encountered often.
+    cycle_times = 0_i32
+
     ipRange.each do |ip_address|
       # If caching is enabled, it will break if it expired
       timed_out = false
@@ -103,8 +106,8 @@ class Coffee::Task
 
       # If the cache is full, break, If half full, sleep for 5 seconds
       if cache.try &.not_expired?
-        break if cache.try &.ip_range_full? ipRange
-        break if cache.try &.full?
+        break if (cycle_times == 50_i32) && cache.try &.ip_range_full? ipRange
+        break if (cycle_times == 50_i32) && cache.try &.full?
         sleep 5_i32.seconds if cache.try &.half_full?
       end
 
@@ -171,6 +174,7 @@ class Coffee::Task
       cache.try &.<< entry, ipRange
 
       progress.try &.added_matched
+      cycle_times += 1_i32
     end
 
     self.timing = Time.monotonic - task_elapsed

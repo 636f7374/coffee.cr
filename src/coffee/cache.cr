@@ -23,7 +23,7 @@ class Coffee::Cache
 
   def ip_range_full?(ip_range : IPAddress) : Bool
     @mutex.synchronize do
-      count = storage.count { |collect| ip_range.includes? collect.superIpAddress }
+      count = storage.count { |item| ip_range.includes? item.superIpAddress }
       return true if rangeCapacity <= count
 
       false
@@ -31,7 +31,7 @@ class Coffee::Cache
   end
 
   def full?
-    capacity <= self.size
+    capacity == self.size
   end
 
   def half_full?
@@ -75,8 +75,12 @@ class Coffee::Cache
 
   def <<(entry : Entry, ip_range : IPAddress)
     expired_clean
-    return if ip_range_full? ip_range
-    return if full?
+
+    if full? || ip_range_full? ip_range
+      try_write_high_priority_entry entry, ip_range
+
+      return
+    end
 
     @mutex.synchronize do
       storage << entry
@@ -84,11 +88,30 @@ class Coffee::Cache
     end
   end
 
+  def try_write_high_priority_entry(entry : Entry, ip_range : IPAddress)
+    return unless entry.priority.zero?
+
+    @mutex.synchronize do
+      deleted = false
+
+      storage.each_with_index do |item, index|
+        next unless ip_range.includes? item.superIpAddress
+
+        if item.priority > entry.priority
+          storage.delete_at index, 1_i32
+          storage << entry
+          break refresh_clean_at
+        end
+      end
+    end
+  end
+
   def to_ip_address(port : Int32) : Array(Socket::IPAddress)?
     return if storage.empty?
 
     @mutex.synchronize do
-      storage.map { |item| Socket::IPAddress.new item.ipAddress.address, port }
+      _storage = storage.sort { |a, b| a.priority <=> b.priority }
+      _storage.map { |item| Socket::IPAddress.new item.ipAddress.address, port }
     end
   end
 
