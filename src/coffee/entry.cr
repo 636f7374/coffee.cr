@@ -10,7 +10,7 @@ class Coffee::Entry
   property createdAt : Time
 
   def initialize(@ipAddress : Socket::IPAddress, @superIpAddress : IPAddress, @edge : Needle::Edge? = nil,
-                 @iata : Needle::IATA? = nil, @timing : Time::Span? = nil, @priority : Int32 = 1_i32)
+                 @iata : Needle::IATA? = nil, @timing : Time::Span? = nil, @priority : Int32 = 10_i32)
     @createdAt = Time.local
   end
 

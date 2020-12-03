@@ -30,6 +30,15 @@ class Coffee::Cache
     end
   end
 
+  def high_priority_full?
+    @mutex.synchronize do
+      count = storage.count { |item| item.priority <= 1_i32 }
+      return true if 2_i32 <= count
+
+      false
+    end
+  end
+
   def full?
     capacity == self.size
   end
@@ -89,7 +98,7 @@ class Coffee::Cache
   end
 
   def try_write_high_priority_entry(entry : Entry, ip_range : IPAddress)
-    return unless entry.priority.zero?
+    return if entry.priority > 1_i32
 
     @mutex.synchronize do
       deleted = false

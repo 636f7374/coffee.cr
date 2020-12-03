@@ -106,8 +106,8 @@ class Coffee::Task
 
       # If the cache is full, break, If half full, sleep for 5 seconds
       if cache.try &.not_expired?
-        break if (cycle_times == 50_i32) && cache.try &.ip_range_full? ipRange
-        break if (cycle_times == 50_i32) && cache.try &.full?
+        break if (cycle_times == 50_i32 || cache.try &.high_priority_full?) && cache.try &.ip_range_full? ipRange
+        break if (cycle_times == 50_i32 || cache.try &.high_priority_full?) && cache.try &.full?
         sleep 5_i32.seconds if cache.try &.half_full?
       end
 
@@ -150,7 +150,7 @@ class Coffee::Task
       id, delimiter, iata = value.rpartition "-"
       next progress.try &.added_invalid unless _iata = Needle::IATA.parse? iata
 
-      priority = 1_i32
+      priority = 10_i32
       matched = false
 
       iatas.each do |needle|

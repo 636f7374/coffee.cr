@@ -25,10 +25,10 @@ module Coffee::Serialization
           if item.is_a? String
             _item = Needle::IATA.parse? item
 
-            list << Tuple.new _item, 1_i32 if _item
+            list << Tuple.new _item, 10_i32 if _item
           else
             _item = Needle::IATA.parse? item.value
-            _priority = item.priority || 0_i32
+            _priority = item.priority || 10_i32
 
             list << Tuple.new _item, _priority if _item
           end
@@ -36,7 +36,7 @@ module Coffee::Serialization
       when String
         _item = Needle::IATA.parse? needles
 
-        list << Tuple.new _item, 1_i32 if _item
+        list << Tuple.new _item, 10_i32 if _item
       end
     end
 
@@ -48,11 +48,11 @@ module Coffee::Serialization
             _edge = Needle::Edge.parse? item
             _item = _edge.to_iata? if _edge
 
-            list << Tuple.new _item, 1_i32 if _item
+            list << Tuple.new _item, 10_i32 if _item
           else
             _edge = Needle::Edge.parse? item.value
             _item = _edge.to_iata? if _edge
-            _priority = item.priority || 0_i32
+            _priority = item.priority || 10_i32
 
             list << Tuple.new _item, _priority if _item
           end
@@ -61,7 +61,7 @@ module Coffee::Serialization
         _edge = Needle::Edge.parse? needles
         _item = _edge.to_iata? if _edge
 
-        list << Tuple.new _item, 1_i32 if _item
+        list << Tuple.new _item, 10_i32 if _item
       else
       end
     end
@@ -75,13 +75,13 @@ module Coffee::Serialization
             next unless _region
 
             _region.each do |region_item|
-              list << Tuple.new region_item, 1_i32
+              list << Tuple.new region_item, 10_i32
             end
           else
             _region = Needle::Region.parse? item.value
             next unless _region
 
-            _priority = item.priority || 0_i32
+            _priority = item.priority || 10_i32
 
             _region.each do |region_item|
               list << Tuple.new region_item, _priority
@@ -92,7 +92,7 @@ module Coffee::Serialization
         _region = Needle::Region.parse? needles
 
         _region.try &.each do |region_item|
-          list << Tuple.new region_item, 1_i32
+          list << Tuple.new region_item, 10_i32
         end
       else
       end
