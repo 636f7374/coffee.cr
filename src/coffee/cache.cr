@@ -1,15 +1,14 @@
 class Coffee::Cache
   property storage : Array(Entry)
-  property capacity : Int32
-  property cleanInterval : Time::Span
+  property option : Option::Cache
   property cleanAt : Time
   property rangeCapacity : Int32
   property mutex : Mutex
 
-  def initialize(@storage : Array(Entry) = Array(Entry).new, @capacity : Int32 = 5_i32,
-                 @cleanInterval : Time::Span = 180_i32.seconds, taskCount : Int32 = 0_i32)
+  def initialize(@storage : Array(Entry) = Array(Entry).new, taskCount : Int32 = 0_i32,
+                 @option : Option::Cache = Option::Cache.new)
     @cleanAt = Time.local
-    @rangeCapacity = Cache.maximum_range_capacity capacity, taskCount
+    @rangeCapacity = Cache.maximum_range_capacity option.capacity, taskCount
     @mutex = Mutex.new :unchecked
   end
 
@@ -40,11 +39,11 @@ class Coffee::Cache
   end
 
   def full?
-    capacity == self.size
+    option.capacity <= self.size
   end
 
   def half_full?
-    (capacity / 2_i32 - self.size) <= 0_i32
+    (option.capacity / 2_i32 - self.size) <= 0_i32
   end
 
   def size
@@ -60,7 +59,7 @@ class Coffee::Cache
   end
 
   def clean_expired?
-    (Time.local - cleanAt) > cleanInterval
+    (Time.local - cleanAt) > option.cleanInterval
   end
 
   def not_expired?

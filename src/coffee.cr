@@ -7,6 +7,7 @@ require "wrench"
 
 require "./coffee/extra/*"
 require "./coffee/needle/*"
+require "./coffee/option/*"
 require "./coffee/render/*"
 require "./coffee/serialization/*"
 require "./coffee/*"

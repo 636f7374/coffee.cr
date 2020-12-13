@@ -2,41 +2,44 @@ class Coffee::Task
   property ipRange : IPAddress
   property iatas : Array(Tuple(Needle::IATA, Int32))
   property timeout : TimeOut
+  property taskExecutionTime : Time::Span?
   property edges : Array(Tuple(Needle::Edge, Int32))
   property progress : Progress?
   property finished : Bool
 
   def initialize(@ipRange : IPAddress, @iatas : Array(Tuple(Needle::IATA, Int32)), commandLine : Bool = false,
-                 @timeout : TimeOut = TimeOut.new)
+                 @timeout : TimeOut = TimeOut.new, @taskExecutionTime : Time::Span? = nil)
     @edges = edges
     @progress = Progress.new ipRange.size if commandLine
     @finished = false
   end
 
-  def self.new(ip_range : String, needles : Array(Tuple(Needle::IATA, Int32)), timeout : TimeOut = TimeOut.new)
+  def self.new(ip_range : String, needles : Array(Tuple(Needle::IATA, Int32)), timeout : TimeOut = TimeOut.new,
+               task_execution_time : Time::Span? = nil)
     return unless _ip_range = IPAddress.new ip_range
 
-    new _ip_range, writer, needles, timeout
+    new _ip_range, writer, needles, timeout, task_execution_time
   end
 
-  def self.new(ip_range : String, needles : Array(Tuple(Needle::Edge, Int32)), timeout : TimeOut = TimeOut.new)
+  def self.new(ip_range : String, needles : Array(Tuple(Needle::Edge, Int32)), timeout : TimeOut = TimeOut.new,
+               task_execution_time : Time::Span? = nil)
     return unless _ip_range = IPAddress.new ip_range
     return unless _needles = needles.map { |needle| Tuple.new needle.first.to_iata?, needle.last }
 
-    new _ip_range, writer, _needles, timeout
+    new _ip_range, writer, _needles, timeout, task_execution_time
   end
 
-  def self.new(ip_range : String, needle : Needle::IATA, timeout : TimeOut = TimeOut.new)
+  def self.new(ip_range : String, needle : Needle::IATA, timeout : TimeOut = TimeOut.new, task_execution_time : Time::Span? = nil)
     return unless _ip_range = IPAddress.new ip_range
 
-    new _ip_range, writer, [Tuple.new needle, 1_i32], timeout
+    new _ip_range, writer, [Tuple.new needle, 1_i32], timeout, task_execution_time
   end
 
-  def self.new(ip_range : String, needle : Needle::Edge, timeout : TimeOut = TimeOut.new)
+  def self.new(ip_range : String, needle : Needle::Edge, timeout : TimeOut = TimeOut.new, task_execution_time : Time::Span? = nil)
     return unless _ip_range = IPAddress.new ip_range
     return unless _needle = needle.to_iata?
 
-    new _ip_range, writer, [Tuple.new _needle, 1_i32], timeout
+    new _ip_range, writer, [Tuple.new _needle, 1_i32], timeout, task_execution_time
   end
 
   def timing=(value : Time::Span)
@@ -91,24 +94,19 @@ class Coffee::Task
     return if finished? && progress
     task_elapsed = Time.monotonic
 
-    # Set the minimum number of attempts, high priority IP is not always encountered often.
-    cycle_times = 0_i32
-
     ipRange.each do |ip_address|
       # If caching is enabled, it will break if it expired
       timed_out = false
 
-      cache.try do |_cache|
-        timed_out = true if _cache.cleanInterval <= (Time.monotonic - task_elapsed)
+      taskExecutionTime.try do |task_execution_time|
+        timed_out = true if task_execution_time <= (Time.monotonic - task_elapsed)
       end
 
       break if timed_out
 
       # If the cache is full, break, If half full, sleep for 5 seconds
       if cache.try &.not_expired?
-        if (cycle_times == 50_i32) || cache.try &.high_priority_full?
-          break if cache.try &.full? || cache.try &.ip_range_full? ipRange
-        end
+        break if cache.try &.high_priority_full? && (cache.try &.full? || cache.try &.ip_range_full? ipRange)
 
         sleep 5_i32.seconds if cache.try &.half_full?
       end
@@ -127,7 +125,7 @@ class Coffee::Task
         socket.try &.close rescue nil
         progress.try &.added_failure
 
-        next cycle_times += 1_i32
+        next
       end
 
       # Write & Read Payload
@@ -141,7 +139,7 @@ class Coffee::Task
         socket.close rescue nil
         progress.try &.added_failure
 
-        next cycle_times += 1_i32
+        next
       end
 
       # Close Socket
@@ -149,14 +147,12 @@ class Coffee::Task
 
       # Check Match
       unless value = response.headers["CF-RAY"]?
-        cycle_times += 1_i32
         next progress.try &.added_invalid
       end
 
       id, delimiter, iata = value.rpartition "-"
 
       unless _iata = Needle::IATA.parse? iata
-        cycle_times += 1_i32
         next progress.try &.added_invalid
       end
 
@@ -171,7 +167,6 @@ class Coffee::Task
       end
 
       unless matched
-        cycle_times += 1_i32
         next progress.try &.added_mismatch
       end
 
@@ -186,7 +181,6 @@ class Coffee::Task
       cache.try &.<< entry, ipRange
 
       progress.try &.added_matched
-      cycle_times += 1_i32
     end
 
     self.timing = Time.monotonic - task_elapsed
