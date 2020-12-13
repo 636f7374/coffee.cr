@@ -59,7 +59,7 @@ class Coffee::Cache
   end
 
   def clean_expired?
-    (Time.local - cleanAt) > option.cleanInterval
+    option.cleanInterval <= (Time.local - cleanAt)
   end
 
   def not_expired?
@@ -70,15 +70,20 @@ class Coffee::Cache
     @mutex.synchronize { self.storage.clear }
   end
 
-  def expired_clean!
-    self.clear
-    refresh_clean_at
-  end
-
   def expired_clean
     return unless clean_expired?
 
     expired_clean!
+  end
+
+  def expired_clean!
+    @mutex.synchronize do
+      storage.each_with_index do |item, index|
+        storage.delete_at index, 1_i32 if option.cleanInterval <= (Time.local - item.createdAt)
+      end
+    end
+
+    refresh_clean_at
   end
 
   def <<(entry : Entry, ip_range : IPAddress)
@@ -90,10 +95,7 @@ class Coffee::Cache
       return
     end
 
-    @mutex.synchronize do
-      storage << entry
-      refresh_clean_at
-    end
+    @mutex.synchronize { storage << entry }
   end
 
   def try_write_high_priority_entry(entry : Entry, ip_range : IPAddress)
@@ -104,12 +106,12 @@ class Coffee::Cache
 
       storage.each_with_index do |item, index|
         next unless ip_range.includes? item.superIpAddress
+        next unless item.priority > entry.priority
 
-        if item.priority > entry.priority
-          storage.delete_at index, 1_i32
-          storage << entry
-          break refresh_clean_at
-        end
+        storage.delete_at index, 1_i32
+        storage << entry
+
+        break
       end
     end
   end
