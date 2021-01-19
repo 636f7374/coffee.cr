@@ -1,10 +1,12 @@
 class Coffee::Scanner
   property tasks : Array(Task)
-  property total : BigInt | Int32
   property render : Bool?
+  property total : BigInt | Int32
+  property mutex : Mutex
 
   def initialize(@tasks : Array(Task), @render : Bool? = false)
     @total = 0_i32
+    @mutex = Mutex.new :unchecked
 
     flush_total
   end
@@ -22,11 +24,11 @@ class Coffee::Scanner
   end
 
   def finished=(value : Bool)
-    @finished = value
+    @mutex.synchronize { @finished = value }
   end
 
   def finished?
-    @finished
+    @mutex.synchronize { @finished }
   end
 
   def cache=(value : Cache)
@@ -92,10 +94,6 @@ class Coffee::Scanner
 
           break if render && task.finished?
           sleep 1_i32.seconds
-
-          if cache.try &.full?
-            sleep 30_i32.seconds
-          end
         end
       end
     end

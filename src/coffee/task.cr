@@ -5,13 +5,13 @@ class Coffee::Task
   property taskExecutionTime : Time::Span?
   property edges : Array(Tuple(Needle::Edge, Int32))
   property progress : Progress?
-  property finished : Bool
+  property mutex : Mutex
 
   def initialize(@ipRange : IPAddress, @iatas : Array(Tuple(Needle::IATA, Int32)), commandLine : Bool = false,
                  @timeout : TimeOut = TimeOut.new, @taskExecutionTime : Time::Span? = nil)
     @edges = edges
     @progress = Progress.new ipRange.size if commandLine
-    @finished = false
+    @mutex = Mutex.new :unchecked
   end
 
   def self.new(ip_range : String, needles : Array(Tuple(Needle::IATA, Int32)), timeout : TimeOut = TimeOut.new,
@@ -86,8 +86,12 @@ class Coffee::Task
     progress.try &.total
   end
 
+  def finished=(value : Bool)
+    @mutex.synchronize { @finished = value }
+  end
+
   def finished?
-    finished
+    @mutex.synchronize { @finished }
   end
 
   def perform(port : Int32 = 80_i32, method : String = "HEAD")

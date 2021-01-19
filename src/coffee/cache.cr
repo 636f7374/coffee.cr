@@ -55,11 +55,11 @@ class Coffee::Cache
   end
 
   def refresh_clean_at
-    @cleanAt = Time.local
+    @mutex.synchronize { @cleanAt = Time.local }
   end
 
   def clean_expired?
-    option.cleanInterval <= (Time.local - cleanAt)
+    option.cleanInterval <= (Time.local - @mutex.synchronize { cleanAt })
   end
 
   def not_expired?
