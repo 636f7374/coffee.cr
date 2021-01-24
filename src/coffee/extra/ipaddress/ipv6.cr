@@ -1,7 +1,7 @@
 module IPAddress
   class IPv6
     def self.parse_u128_address(u128 : BigInt, prefix = 128_i32) : IPAddress
-      str = IN6FORMAT % (0_i32..7_i32).map { |i| (u128 >> (112_i32 - 16_i32 * i)) & 0xffff }
+      str = IN6FORMAT % (0_i32..7_i32).map { |i| UInt64.new (u128 >> (112_i32 - 16_i32 * i)) & 0xffff }
 
       IPAddress.new str + "/#{prefix}"
     end

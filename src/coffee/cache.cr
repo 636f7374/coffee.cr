@@ -102,8 +102,6 @@ class Coffee::Cache
     return if entry.priority > 1_i32
 
     @mutex.synchronize do
-      deleted = false
-
       storage.each_with_index do |item, index|
         next unless ip_range.includes? item.superIpAddress
         next unless item.priority > entry.priority
