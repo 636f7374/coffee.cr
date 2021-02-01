@@ -46,6 +46,10 @@ class Coffee::Cache
     (option.capacity / 2_i32 - self.size) <= 0_i32
   end
 
+  def cache_hash
+    @mutex.synchronize { self.hash }
+  end
+
   def size
     @mutex.synchronize { storage.size }
   end

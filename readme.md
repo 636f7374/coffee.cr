@@ -258,4 +258,4 @@ $ make test
 
 ## License
 
-* MIT License
+* BSD 3-Clause Clear License
